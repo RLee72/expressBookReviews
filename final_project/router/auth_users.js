@@ -36,54 +36,71 @@ regd_users.post("/login", (req,res) => {
   //Write your code here
   const username = req.body.username;
   const password = req.body.password;
-
   if (!username || !password) {
-    return res.status(404).json({message: "Error logging in"});
+      return res.status(404).json({message: "Error logging in"});
   }
-
-  if (authenticatedUser(username, password)) {
+ if (authenticatedUser(username,password)) {
     let accessToken = jwt.sign({
       data: password
-    }, 'access', { expiresIn: 60*60 });
-
-    req.session.authorization ={
+    }, 'access', { expiresIn: 60 * 60 });
+    req.session.authorization = {
       accessToken,username
-    }
-  
-  return res.status(200).send("User successfully logged in");
-}
-  else {
-  return res.status(300).json({message: "Invalid Login. CHeck username and password"});
   }
-});
+  return res.status(200).send("User successfully logged in");
+  } else {
+    return res.status(300).json({message: "Invalid Login. Check username and password"});
+  }});
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
+
   const username = req.body.username;
-  const password = req.body.password;
+  const isbn = parseInt(req.params.isbn); 
+  const book = books[isbn];
 
-    if (authenticatedUser(username, password)) {
-      const isbn = parseInt(req.params.isbn); 
-      const book = books[isbn];
+  /* pseudocode: check request body for username
+  if exists,check if book with isbn exists
+  if exists modify reviews and add username: "review here" to review {}
+    book[req.body.reviews] ={
+        "reviews": req.body.username
+    }
 
-    let filtered_books = books.filter((book) => book.isbn === isbn);
-    if (filtered_books.length > 0) {
-      let filtered_books = filtered_books[0];
-      let reviews = books[isbn].reviews;
+  */
 
-      if (reviews) {
-        filtered_books.reviews = reviews
+
+  if (username){
+    if (isbn < 1 || isbn > 10) {
+      res.send("Not a valid month number")
+    }
+
+  else {
+    // check if review exists:
+    if (book.reviews[username]) {
+      let review = req.body.reviews;
+
+      if(review) {
+        book.reviews[username] = review
+        res.send(`review exists`);
       }
-      books = books.filter((books)=> book.isbn != book);
-      books.push(filtered_books);
-      res.send(`Book review with isbn ${isbn} updated`)
-      
+
+    else {
+      book.reviews = {
+        [req.body.username]: req.body.review
+      }
+      res.send(`review added`);
+      //book[req.body.reviews]={
+      //  "username": req.body.reviews
+      //}
     }
     
-    else {
-      res.status(300).json({message: "unable to find user!"});
     }
+  }
+
+      return res.status(200).send(`Book review with ISBN ${isbn} by user ${username} updated.`);
+    } 
+  else {
+    return res.status(404).json({ message: "user doesn't exist" });
   }
 });
 
