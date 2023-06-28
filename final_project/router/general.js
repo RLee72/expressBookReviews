@@ -3,7 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
-
+const axios = require('axios').default;
 
 public_users.post("/register", (req,res) => {
   //Write your code here
@@ -76,5 +76,99 @@ public_users.get('/review/:isbn',function (req, res) {
   return res.status(300).json(books[isbn].reviews);
   }
 });
+
+// task 10 
+// using promises
+let bookList = new Promise((resolve, reject) => {
+  setTimeout(() => {
+  resolve(" ... End of book list, Promise resolved")
+}, 2000)
+});
+
+console.log("Retrieving list of books available...");
+
+bookList.then((successMessage)=> {
+  let titles = Object.values(books).map(book => book.title); 
+  console.log(titles + successMessage)
+})
+
+// task 11
+// using async axios
+
+
+
+public_users.get('/isbn/:isbn',function (req, res) {
+  //Write your code here
+  let isbn = parseInt(req.params.isbn); // isbn is an integer
+  if (isbn < 1 || isbn > 10) {
+    res.send("Not a valid month number")
+  }
+  else {
+
+    const connectToURL = async (url)=>{
+        const req = await axios.get(url);
+        console.log(req);
+        req.then(resp => {
+
+            console.log("Fulfilled")
+            console.log(resp.data);
+            res.send(resp.data);
+        })
+        .catch(err => {
+            console.log("Rejected for url "+url)
+            res.send("Rejected for url "+url);
+            console.log(err.toString())
+        });
+        connectToURL('');
+    }
+  }
+
+ });
+
+/*
+
+// Task 12:
+public_users.get('/author/:author',function (req, res) {
+  //Write your code here
+  const author =req.params.author;
+  let bookList = new Promise((resolve, reject) => {
+    setTimeout(() => {
+    resolve(" ... End of book list, Promise resolved")
+  }, 2000)
+  });
+  
+  console.log("Retrieving list of books available...");
+  
+  bookList.then((successMessage)=> {
+    let filtered_books = Object.values(books).filter((book) => book.author === author);
+    console.log(filtered_books + successMessage)
+  })
+  
+});
+
+// Task 13:
+public_users.get('/title/:title',function (req, res) {
+  //Write your code here
+  const title = req.params.title;
+  
+  
+  let bookDetails = new Promise((resolve, reject) => {
+    setTimeout(() => {
+    resolve(" ... End of book list, Promise resolved")
+  }, 2000)
+  });
+  
+  console.log("Retrieving list of books available...");
+  
+  bookDetails.then((successMessage)=> {
+    let filtered_books = Object.values(books).filter((book) => book.title === title);
+    console.log(filtered_books + successMessage)
+  })
+
+
+});
+
+
+*/
 
 module.exports.general = public_users;
