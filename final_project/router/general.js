@@ -5,6 +5,8 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 const axios = require('axios').default;
 
+
+
 public_users.post("/register", (req,res) => {
   //Write your code here
   const username = req.body.username;
@@ -30,21 +32,65 @@ public_users.post("/register", (req,res) => {
 public_users.get('/',function (req, res) {
   //Write your code here
   let titles = Object.values(books).map(book => book.title); 
+
+  
+// task 10 
+// using promises
+
+
+let bookList = new Promise((resolve, reject) => {
+    setTimeout(() => {
+    resolve(" ... End of book list, Promise resolved")
+  }, 2000)
+  });
+  
+  console.log("Retrieving list of books available...");
+  
+  bookList.then((successMessage)=> {
+    let titles = Object.values(books).map(book => book.title); 
+    console.log(titles + successMessage)
+  })
+
+  
+
   return res.status(300).json(titles);
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  let isbn = parseInt(req.params.isbn); // isbn is an integer
-  if (isbn < 1 || isbn > 10) {
-    res.send("Not a valid month number")
-  }
-  else {
-  return res.status(300).json(books[isbn]);
-  }
 
- });
+
+
+  
+public_users.get('/isbn/:isbn',function (req, res) {
+    //task 11
+//Write your code here
+    let isbn = parseInt(req.params.isbn); // isbn is an integer
+    const book = books[isbn];
+    let bookList = new Promise((resolve, reject) => {
+        setTimeout(() => {
+        resolve(" ... End of book list, Promise resolved")
+      }, 2000)
+      });
+      
+      console.log("Retrieving book details...");
+      
+      //task 2
+      bookList.then((successMessage)=> {
+        console.log(`Book Title: ${book.title}`);
+        console.log(`Book Author: ${book.author}`);
+      })
+
+
+    if (isbn < 1 || isbn > 10) {
+      res.send("Not a valid month number")
+    }
+    else {
+    return res.status(300).json(books[isbn]);
+    }
+
+
+  
+   });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
@@ -77,26 +123,13 @@ public_users.get('/review/:isbn',function (req, res) {
   }
 });
 
-// task 10 
-// using promises
-let bookList = new Promise((resolve, reject) => {
-  setTimeout(() => {
-  resolve(" ... End of book list, Promise resolved")
-}, 2000)
-});
-
-console.log("Retrieving list of books available...");
-
-bookList.then((successMessage)=> {
-  let titles = Object.values(books).map(book => book.title); 
-  console.log(titles + successMessage)
-})
-
 // task 11
 // using async axios
 
 
+//connectToURL('https://vsytch-5000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/isbn/'+isbn);
 
+/*
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   let isbn = parseInt(req.params.isbn); // isbn is an integer
@@ -119,11 +152,12 @@ public_users.get('/isbn/:isbn',function (req, res) {
             res.send("Rejected for url "+url);
             console.log(err.toString())
         });
-        connectToURL('');
+        connectToURL('https://vsytch-5000.theiadocker-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/isbn/'+isbn);
     }
   }
 
  });
+ */
 
 /*
 
