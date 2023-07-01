@@ -68,19 +68,20 @@ public_users.get('/isbn/:isbn',function (req, res) {
     const book = books[isbn];
     let bookList = new Promise((resolve, reject) => {
         setTimeout(() => {
-        resolve(" ... End of book list, Promise resolved")
+        resolve(" ... End of book details, Promise resolved")
       }, 2000)
       });
       
       console.log("Retrieving book details...");
-      
-      //task 2
+
       bookList.then((successMessage)=> {
         console.log(`Book Title: ${book.title}`);
         console.log(`Book Author: ${book.author}`);
+        console.log(`Book Reviews: ${book.reviews}`);
+        console.log(successMessage)
       })
 
-
+    //task 2
     if (isbn < 1 || isbn > 10) {
       res.send("Not a valid month number")
     }
@@ -107,6 +108,26 @@ public_users.get('/title/:title',function (req, res) {
   //Write your code here
   const title = req.params.title;
   let filtered_books = Object.values(books).filter((book) => book.title === title);
+  //const author = filtered_books[0].author;
+  //const titleBook = filtered_books[0].title;
+  //const reviews = filtered_books[0].reviews;
+
+  const details = req.params.title;
+  //res.send(books[title])
+  
+  let bookDetails = new Promise((resolve, reject) =>{
+    setTimeout(() => {
+        resolve("... End of book details, promise resolved")
+    }, 2000)
+    });
+  console.log("Retrieving book detials based off title...");
+  bookDetails.then((successMessage) => {
+      console.log(books[details])
+      //console.log('Author:' , author);
+      //console.log('Review: ', review)
+      console.log(successMessage)
+  })
+
   return res.status(300).json(filtered_books);
 });
 
